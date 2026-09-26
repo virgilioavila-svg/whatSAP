@@ -1,4 +1,4 @@
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method === 'GET') {
     const VERIFY_TOKEN = "mi_token_seguro";
     const mode = req.query['hub.mode'];
@@ -8,8 +8,13 @@ export default function handler(req, res) {
     if (mode && token === VERIFY_TOKEN) {
       return res.status(200).send(challenge);
     } else {
-      return res.status(403).send('Error de verificacion');
+      return res.status(403).send('Error de verificación');
     }
   }
-  return res.status(200).json({ status: 'ok' });
+
+  if (req.method === 'POST') {
+    return res.status(200).json({ status: 'EVENT_RECEIVED' });
+  }
+
+  return res.status(405).json({ error: 'Método no permitido' });
 }
